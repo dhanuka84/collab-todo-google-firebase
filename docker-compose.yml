@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: collab-todo-backend
+    env_file:
+      - ./backend/.env
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/firebase-service-account.json
+    volumes:
+      - ./secrets/firebase-service-account.json:/secrets/firebase-service-account.json:ro
+    ports:
+      - "4000:4000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: collab-todo-frontend
+    env_file:
+      - ./frontend/.env
+    environment:
+      VITE_API_BASE_URL: "http://localhost:4000"
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
