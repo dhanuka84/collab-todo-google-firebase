@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-import { useAuth } from '../lib/authContext';
+import React, { useState } from "react";
+import { useAuth } from "../lib/authContext";
 
 interface Props {
   onRegistered(): void;
   goToLogin(): void;
 }
 
-export const RegisterPage: React.FC<Props> = ({ onRegistered, goToLogin }) => {
+export const RegisterPage: React.FC<Props> = ({
+  onRegistered,
+  goToLogin
+}) => {
   const { signup } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -21,7 +24,7 @@ export const RegisterPage: React.FC<Props> = ({ onRegistered, goToLogin }) => {
       await signup(email, password);
       onRegistered();
     } catch (e: any) {
-      setError(e.message || 'Registration failed');
+      setError(e.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -58,11 +61,11 @@ export const RegisterPage: React.FC<Props> = ({ onRegistered, goToLogin }) => {
             disabled={loading}
             className="mt-1 text-sm px-3 py-1 border rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-60"
           >
-            {loading ? 'Registering…' : 'Register'}
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
         <p className="mt-4 text-xs text-gray-600">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <button onClick={goToLogin} className="underline">
             Login here
           </button>

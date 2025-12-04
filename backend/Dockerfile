@@ -3,7 +3,7 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm install || npm install --legacy-peer-deps
 
 COPY tsconfig.json ./tsconfig.json
 COPY src ./src
@@ -15,7 +15,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
-RUN npm install --only=production
+RUN npm install --only=production || npm install --only=production --legacy-peer-deps
 
 COPY --from=build /app/dist ./dist
 

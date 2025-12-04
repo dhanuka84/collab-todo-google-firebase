@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useAuth } from '../lib/authContext';
+import React, { useState } from "react";
+import { useAuth } from "../lib/authContext";
 
 interface Props {
   onLoggedIn(): void;
@@ -8,8 +8,8 @@ interface Props {
 
 export const LoginPage: React.FC<Props> = ({ onLoggedIn, goToRegister }) => {
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -21,7 +21,7 @@ export const LoginPage: React.FC<Props> = ({ onLoggedIn, goToRegister }) => {
       await login(email, password);
       onLoggedIn();
     } catch (e: any) {
-      setError(e.message || 'Login failed');
+      setError(e.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -58,11 +58,11 @@ export const LoginPage: React.FC<Props> = ({ onLoggedIn, goToRegister }) => {
             disabled={loading}
             className="mt-1 text-sm px-3 py-1 border rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-60"
           >
-            {loading ? 'Logging in…' : 'Login'}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
         <p className="mt-4 text-xs text-gray-600">
-          No account?{' '}
+          No account?{" "}
           <button onClick={goToRegister} className="underline">
             Register here
           </button>

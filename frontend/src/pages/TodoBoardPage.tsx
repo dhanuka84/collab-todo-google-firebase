@@ -1,40 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import { useApi } from '../lib/apiClient';
-import { Todo } from '../types/todo';
-import { TodoCard } from '../components/TodoCard';
-import { TodoEditor } from '../components/TodoEditor';
-import { useAuth } from '../lib/authContext';
+import React, { useEffect, useState } from "react";
+import { useApi } from "../lib/apiClient";
+import { Todo } from "../types/todo";
+import { AppUser } from "../types/user";
+import { TodoCard } from "../components/TodoCard";
+import { TodoEditor } from "../components/TodoEditor";
+import { useAuth } from "../lib/authContext";
 
 export const TodoBoardPage: React.FC = () => {
   const api = useApi();
   const { user, logout } = useAuth();
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<AppUser[]>([]);
+  const [loadingTodos, setLoadingTodos] = useState(true);
+  const [loadingUsers, setLoadingUsers] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const loadTodos = async () => {
-    setLoading(true);
+    setLoadingTodos(true);
     setError(null);
     try {
-      const data = await api.get<Todo[]>('/api/todos');
+      const data = await api.get<Todo[]>("/api/todos");
       setTodos(data);
     } catch (e: any) {
-      setError(e.message || 'Failed to load todos');
+      setError(e.message || "Failed to load todos");
     } finally {
-      setLoading(false);
+      setLoadingTodos(false);
+    }
+  };
+
+  const loadUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const data = await api.get<AppUser[]>("/api/users");
+      setUsers(data);
+    } catch (e) {
+      // user list is optional for viewing, so we do not set a global error here
+      console.error("Failed to load users", e);
+    } finally {
+      setLoadingUsers(false);
     }
   };
 
   useEffect(() => {
     loadTodos();
+    loadUsers();
   }, []);
 
-  const handleCreate = async (title: string, description?: string) => {
+  const handleCreate = async (input: Partial<Todo>) => {
     try {
-      const created = await api.post<Todo>('/api/todos', { title, description });
+      const created = await api.post<Todo>("/api/todos", {
+        title: input.title,
+        content: input.content,
+        type: input.type,
+        checklist: input.checklist,
+        color: input.color,
+        labels: input.labels
+      });
       setTodos((current) => [created, ...current]);
     } catch (e: any) {
-      setError(e.message || 'Failed to create todo');
+      setError(e.message || "Failed to create todo");
     }
   };
 
@@ -43,7 +67,7 @@ export const TodoBoardPage: React.FC = () => {
       const updated = await api.patch<Todo>(`/api/todos/${id}`, patch);
       setTodos((current) => current.map((t) => (t.id === id ? updated : t)));
     } catch (e: any) {
-      setError(e.message || 'Failed to update todo');
+      setError(e.message || "Failed to update todo");
     }
   };
 
@@ -52,14 +76,16 @@ export const TodoBoardPage: React.FC = () => {
       await api.del<void>(`/api/todos/${id}`);
       setTodos((current) => current.filter((t) => t.id !== id));
     } catch (e: any) {
-      setError(e.message || 'Failed to delete todo');
+      setError(e.message || "Failed to delete todo");
     }
   };
+
+  const currentUserUid = user?.uid || "";
 
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="px-6 py-3 border-b bg-white flex justify-between items-center">
-        <h1 className="text-lg font-bold">Collaborative Todo</h1>
+        <h1 className="text-lg font-bold">Collaborative Todo Board</h1>
         <div className="flex items-center gap-3 text-sm">
           {user?.email && <span>{user.email}</span>}
           <button
@@ -77,24 +103,31 @@ export const TodoBoardPage: React.FC = () => {
             {error}
           </div>
         )}
-        {loading ? (
-          <div>Loading…</div>
+        {loadingTodos ? (
+          <div>Loading notes...</div>
         ) : (
           <div className="grid gap-4 mt-4 md:grid-cols-3 sm:grid-cols-2">
             {todos.map((todo) => (
               <TodoCard
                 key={todo.id}
                 todo={todo}
+                allUsers={users}
+                currentUserUid={currentUserUid}
                 onUpdate={handleUpdate}
                 onDelete={handleDelete}
               />
             ))}
             {todos.length === 0 && (
               <p className="text-sm text-gray-500">
-                No todos yet. Create one above.
+                No notes yet. Create one above.
               </p>
             )}
           </div>
+        )}
+        {loadingUsers && (
+          <p className="text-xs text-gray-400 mt-2">
+            Loading users for assignment...
+          </p>
         )}
       </main>
     </div>
