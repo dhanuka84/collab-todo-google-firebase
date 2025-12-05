@@ -111,3 +111,9 @@ GET /api/users
   List users for assignment.
 
 See source for full details.
+
+<img width="2478" height="978" alt="image" src="https://github.com/user-attachments/assets/609bc9ac-8ec6-4400-9ce0-ceca0899dcef" />
+
+<img width="861" height="815" alt="image" src="https://github.com/user-attachments/assets/11dac75d-edf2-4914-b4c1-01f304ab11fe" />
+
+
