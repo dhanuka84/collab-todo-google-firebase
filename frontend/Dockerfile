@@ -5,7 +5,13 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install || npm install --legacy-peer-deps
 
+# Copy base config files
 COPY tsconfig.json vite.config.ts index.html ./
+
+# Copy Tailwind & PostCSS config so build can use them
+COPY tailwind.config.cjs postcss.config.cjs ./
+
+# App source
 COPY src ./src
 
 ARG VITE_API_BASE_URL
